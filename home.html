@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مؤشر التوازن الذكي | Smart Academic Balance</title>
+    <style>
+        :root {
+            /* ثيم جامعة أم القرى (الأخضر العقيقي والذهبي) */
+            --primary-color: #1b4332;
+            --accent-color: #2d6a4f;
+            --gold-color: #c59b27;
+            --success-color: #40916c;
+            --warning-color: #bc6c25;
+            --bg-color: #f4f6f4;
+            --card-bg: #ffffff;
+            --text-color: #2b2b2b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(27, 67, 50, 0.08);
+            margin-top: 20px;
+            border-top: 5px solid var(--primary-color);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #d8d8d8;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #555;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .role-btn.active {
+            border-color: var(--primary-color);
+            background-color: #1b4332;
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--primary-color);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .calc-btn {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.3s;
+        }
+
+        .calc-btn:hover {
+            background-color: var(--accent-color);
+        }
+
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #e9f5ed;
+            display: none;
+            border-right: 4px solid var(--primary-color);
+        }
+
+        .result-box h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .ai-badge {
+            display: inline-block;
+            background: var(--gold-color);
+            color: #fff;
+            padding: 3px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>مؤشر التوازن الذكي</h1>
+        <p class="subtitle">جامعة أم القرى (الكلية الجامعية بالجموم)</p>
+
+        <!-- اختيار الوضع -->
+        <div class="role-selector">
+            <div class="role-btn active" id="studentTab" onclick="setRole('student')">وضع الطالبة</div>
+            <div class="role-btn" id="doctorTab" onclick="setRole('doctor')">وضع الدكتورة</div>
+        </div>
+
+        <!-- النموذج -->
+        <div id="inputForm">
+            <div class="form-group">
+                <label id="workLabel" for="workHours">عدد ساعات الدراسة يومياً:</label>
+                <input type="number" id="workHours" min="0" max="24" placeholder="مثال: 6">
+            </div>
+
+            <div class="form-group">
+                <label for="restHours">عدد ساعات الراحة والاسترخاء يومياً:</label>
+                <input type="number" id="restHours" min="0" max="24" placeholder="مثال: 3">
+            </div>
+
+            <div class="form-group">
+                <label for="sleepHours">عدد ساعات النوم يومياً:</label>
+                <input type="number" id="sleepHours" min="0" max="24" placeholder="مثال: 7">
+            </div>
+
+            <button class="calc-btn" onclick="calculateBalance()">حساب مؤشر التوازن (بواسطة الذكاء الاصطناعي)</button>
+        </div>
+
+        <!-- النتيجة -->
+        <div class="result-box" id="resultBox">
+            <span class="ai-badge">تحليل ذكي (AI Logic)</span>
+            <h3 id="resultTitle">نتيجة التحليل</h3>
+            <p id="resultText"></p>
+        </div>
+    </div>
+
+    <footer>
+        تصميم وتنفيذ: لميس الهلالي | مشروع التفكير التصميمي 2026
+    </footer>
+
+    <script>
+        let currentRole = 'student';
+
+        function setRole(role) {
+            currentRole = role;
+            document.getElementById('studentTab').classList.toggle('active', role === 'student');
+            document.getElementById('doctorTab').classList.toggle('active', role === 'doctor');
+            
+            const workLabel = document.getElementById('workLabel');
+            if (role === 'student') {
+                workLabel.innerText = "عدد ساعات الدراسة يومياً:";
+            } else {
+                workLabel.innerText = "عدد ساعات التدريس والتحضير يومياً:";
+            }
+            document.getElementById('resultBox').style.display = 'none';
+        }
+
+        function calculateBalance() {
+            const work = parseFloat(document.getElementById('workHours').value) || 0;
+            const rest = parseFloat(document.getElementById('restHours').value) || 0;
+            const sleep = parseFloat(document.getElementById('sleepHours').value) || 0;
+            const total = work + rest + sleep;
+
+            const resultBox = document.getElementById('resultBox');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultText = document.getElementById('resultText');
+
+            if (total > 24) {
+                resultBox.style.display = 'block';
+                resultTitle.innerText = "⚠️ تنبيه في المدخلات";
+                resultText.innerText = "مجموع الساعات المدخلة يتجاوز 24 ساعة في اليوم! يرجى مراجعة الأرقام.";
+                resultBox.style.backgroundColor = "#fdeed9";
+                resultBox.style.borderRightColor = "#bc6c25";
+                return;
+            }
+
+            resultBox.style.display = 'block';
+            
+            let advice = "";
+            if (currentRole === 'student') {
+                if (work > 8 && rest < 2) {
+                    resultTitle.innerText = "🔴 مؤشر ضغط مرتفع (غير متوازن)";
+                    advice = "يبدو أن ساعات الدراسة لديكِ عالية جداً مقابل وقت قليل للراحة. يقترح النظام الذكي تقسيم مهامكِ عبر تقنية بومودورو وأخذ فترات استراحة منتظمة لتجنب الإرهاق.";
+                    resultBox.style.backgroundColor = "#fdf2f2";
+                    resultBox.style.borderRightColor = "#e74c3c";
+                } else {
+                    resultTitle.innerText = "🟢 مؤشر توازن ممتاز!";
+                    advice = "أنتِ تديرين وقتكِ بفاعلية جيدة جداً بين التحصيل الأكاديمي والراحة. استمري بهذا النمط الرائع وحافظي على ساعات النوم الكافية.";
+                    resultBox.style.backgroundColor = "#e9f5ed";
+                    resultBox.style.borderRightColor = "#1b4332";
+                }
+            } else {
+                if (work > 9) {
+                    resultTitle.innerText = "⚠️ ضغط مهام أكاديمية مرتفع";
+                    advice = "استهلاك ساعات طويلة في التحضير والتدريس يتطلب تخصيص وقتاً إضافياً للاسترخاء وتفريغ الطاقة لضمان أعلى إنتاجية أكاديمية.";
+                    resultBox.style.backgroundColor = "#fef9e7";
+                    resultBox.style.borderRightColor = "#c59b27";
+                } else {
+                    resultTitle.innerText = "🟢 استقرار وتوازن مثالي في الجدول";
+                    advice = "جدولكِ متوازن تماماً. حافظي على وقت منتظم للراحة والنوم إلى جانب مهامكِ الأكاديمية والمهنية.";
+                    resultBox.style.backgroundColor = "#e9f5ed";
+                    resultBox.style.borderRightColor = "#1b4332";
+                }
+            }
+            resultText.innerText = advice;
+        }
+    </script>
+</body>
+</html>
